@@ -668,7 +668,7 @@ FLASK_PORT=5007  # 改为其他端口
 
 - 项目主页：[GitHub Repository](#)
 - 问题反馈：[Issues](#)
-- 邮箱：your-email@example.com
+- 邮箱：wjxhmax@outlook.com
 
 ---
 
