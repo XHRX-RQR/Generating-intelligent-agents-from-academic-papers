@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星海论文智能体</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>✨ 星海论文智能体</h1>
+                <p class="version">v1.0.0</p>
+            </div>
+            
+            <div class="sidebar-actions">
+                <button class="btn btn-primary" onclick="startNewPaper()">
+                    <span class="icon">➕</span> 新建论文项目
+                </button>
+            </div>
+            
+            <div class="sessions-section">
+                <h3>历史项目</h3>
+                <div id="sessionsList" class="sessions-list">
+                    <p class="empty-message">暂无项目</p>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="service-status">
+                    <h4>AI服务状态</h4>
+                    <div id="servicesStatus" class="services-status">
+                        <p>加载中...</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 对话区 -->
+            <div class="chat-section">
+                <div class="chat-header">
+                    <h2 id="chatTitle">开始新的论文项目</h2>
+                    <div class="chat-info">
+                        <span id="currentStage" class="stage-badge">未开始</span>
+                        <span id="roundInfo" class="round-info"></span>
+                    </div>
+                </div>
+                
+                <div id="chatMessages" class="chat-messages">
+                    <div class="welcome-message">
+                        <h2>欢迎使用星海论文智能体</h2>
+                        <p>我将通过多轮对话帮助您撰写高质量的学术论文。</p>
+                        <p>点击左上角“新建论文项目”开始吧！</p>
+                        
+                        <div class="features">
+                            <div class="feature">
+                                <span class="feature-icon">🤖</span>
+                                <h3>多模型协作</h3>
+                                <p>多个AI模型分工协作，确保论文质量</p>
+                            </div>
+                            <div class="feature">
+                                <span class="feature-icon">💬</span>
+                                <h3>多轮对话</h3>
+                                <p>通过引导式对话收集详细信息</p>
+                            </div>
+                            <div class="feature">
+                                <span class="feature-icon">📝</span>
+                                <h3>结构完整</h3>
+                                <p>自动生成摘要、引言、方法等完整章节</p>
+                            </div>
+                            <div class="feature">
+                                <span class="feature-icon">🔄</span>
+                                <h3>迭代优化</h3>
+                                <p>质量审核和结构优化，持续改进</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="userInput" 
+                            placeholder="在此输入您的回答或问题..."
+                            rows="3"
+                            disabled
+                        ></textarea>
+                        <button id="sendButton" class="btn btn-send" onclick="sendMessage()" disabled>
+                            <span class="icon">📤</span> 发送
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 论文预览区 -->
+            <div class="paper-preview">
+                <div class="preview-header">
+                    <h2>📄 论文预览</h2>
+                    <div class="preview-actions">
+                        <button class="btn btn-small" onclick="exportPaper('markdown')" id="exportMarkdown" disabled>
+                            导出 Markdown
+                        </button>
+                        <button class="btn btn-small" onclick="exportPaper('text')" id="exportText" disabled>
+                            导出 TXT
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="paperContent" class="paper-content">
+                    <p class="empty-message">论文内容将在这里显示</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- 新建项目对话框 -->
+    <div id="newPaperModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3>新建论文项目</h3>
+                <button class="modal-close" onclick="closeNewPaperModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="paperInfoForm">
+                    <!-- 基本信息 -->
+                    <div class="form-section">
+                        <h4>基本信息</h4>
+                        <div class="form-group">
+                            <label>项目标题 <span class="required">*</span></label>
+                            <input type="text" id="paperTitle" name="title" placeholder="请输入论文项目标题" required>
+                        </div>
+                        <div class="form-group">
+                            <label>用户ID</label>
+                            <input type="text" id="userId" name="userId" placeholder="默认为 default_user" value="default_user">
+                        </div>
+                    </div>
+                    
+                    <!-- 研究主题与背景 -->
+                    <div class="form-section">
+                        <h4>研究主题与背景</h4>
+                        <div class="form-group">
+                            <label>研究主题 <span class="required">*</span></label>
+                            <input type="text" name="研究主题" placeholder="您的研究主要关注什么问题或领域？" required>
+                            <small>例：机器学习在医疗诊断中的应用</small>
+                        </div>
+                        <div class="form-group">
+                            <label>研究背景 <span class="required">*</span></label>
+                            <textarea name="研究背景" rows="3" placeholder="为什么选择这个研究主题？有什么实际意义？" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>研究目标 <span class="required">*</span></label>
+                            <textarea name="研究目标" rows="2" placeholder="您希望通过这项研究达到什么目的？" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>研究问题</label>
+                            <input type="text" name="研究问题" placeholder="具体要解决的研究问题">
+                        </div>
+                        <div class="form-group">
+                            <label>目标期刊/会议</label>
+                            <input type="text" name="目标期刊" placeholder="计划投稿的期刊或会议名称">
+                        </div>
+                    </div>
+                    
+                    <!-- 理论基础与文献 -->
+                    <div class="form-section">
+                        <h4>理论基础与文献</h4>
+                        <div class="form-group">
+                            <label>理论基础</label>
+                            <textarea name="理论基础" rows="3" placeholder="您的研究基于哪些理论或概念框架？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>相关研究</label>
+                            <textarea name="相关研究" rows="3" placeholder="在这个领域，已有哪些重要的研究成果？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>研究缺口</label>
+                            <textarea name="研究缺口" rows="2" placeholder="现有研究存在哪些不足或空白？"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- 研究方法 -->
+                    <div class="form-section">
+                        <h4>研究方法</h4>
+                        <div class="form-group">
+                            <label>研究设计 <span class="required">*</span></label>
+                            <input type="text" name="研究设计" placeholder="采用什么研究设计？（实验、案例、调查等）" required>
+                        </div>
+                        <div class="form-group">
+                            <label>数据来源 <span class="required">*</span></label>
+                            <textarea name="数据来源" rows="2" placeholder="研究数据从哪里获取？样本量多大？" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>数据收集方法</label>
+                            <input type="text" name="数据收集方法" placeholder="问卷、访谈、观察、实验等">
+                        </div>
+                        <div class="form-group">
+                            <label>分析方法 <span class="required">*</span></label>
+                            <input type="text" name="分析方法" placeholder="使用什么方法分析数据？" required>
+                        </div>
+                        <div class="form-group">
+                            <label>研究工具</label>
+                            <input type="text" name="研究工具" placeholder="使用了哪些软件或工具？">
+                        </div>
+                    </div>
+                    
+                    <!-- 研究结果 -->
+                    <div class="form-section">
+                        <h4>研究结果</h4>
+                        <div class="form-group">
+                            <label>主要发现 <span class="required">*</span></label>
+                            <textarea name="主要发现" rows="4" placeholder="您的研究得出了哪些主要发现或结论？" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>数据呈现</label>
+                            <textarea name="数据呈现" rows="3" placeholder="有哪些数据、图表或统计结果需要展示？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>关键指标</label>
+                            <input type="text" name="关键指标" placeholder="有哪些关键的量化或质化指标？">
+                        </div>
+                    </div>
+                    
+                    <!-- 讨论与结论 -->
+                    <div class="form-section">
+                        <h4>讨论与结论</h4>
+                        <div class="form-group">
+                            <label>结果解释</label>
+                            <textarea name="结果解释" rows="3" placeholder="如何解释您的研究发现？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>理论贡献</label>
+                            <textarea name="理论贡献" rows="2" placeholder="您的研究对现有理论有什么贡献？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>实践启示</label>
+                            <textarea name="实践启示" rows="2" placeholder="研究结果对实践有什么指导意义？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>研究局限</label>
+                            <textarea name="研究局限" rows="2" placeholder="这项研究有哪些局限性？"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>未来方向</label>
+                            <textarea name="未来方向" rows="2" placeholder="基于这项研究，未来可以在哪些方向深入探索？"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-hint">
+                        <p><strong>提示：</strong></p>
+                        <ul>
+                            <li>带 <span class="required">*</span> 的字段为必填项</li>
+                            <li>信息越详细，生成的论文质量越高</li>
+                            <li>可以先填写必填项，其他项可以留空</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeNewPaperModal()">取消</button>
+                <button class="btn btn-primary" onclick="confirmNewPaperWithForm()">开始生成论文</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 加载提示 -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p id="loadingText">处理中...</p>
+        </div>
+    </div>
+    
+    <script src="static/js/app.js"></script>
+</body>
+</html>

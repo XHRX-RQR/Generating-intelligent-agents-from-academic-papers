@@ -1,0 +1,72 @@
+# 论文生成配置
+paper_generation:
+  max_rounds: 15  # 最大对话轮数
+  min_rounds: 5   # 最小对话轮数
+  
+  # 论文各部分配置
+  sections:
+    - name: "摘要"
+      key: "abstract"
+      required_info: ["研究背景", "研究目的", "研究方法", "主要发现"]
+      min_words: 200
+      max_words: 300
+    
+    - name: "引言"
+      key: "introduction"
+      required_info: ["研究背景", "文献综述", "研究问题", "研究意义"]
+      min_words: 1000
+      max_words: 1500
+    
+    - name: "文献综述"
+      key: "literature_review"
+      required_info: ["理论基础", "相关研究", "研究缺口"]
+      min_words: 2000
+      max_words: 3000
+    
+    - name: "研究方法"
+      key: "methodology"
+      required_info: ["研究设计", "数据来源", "分析方法", "研究工具"]
+      min_words: 1500
+      max_words: 2000
+    
+    - name: "研究结果"
+      key: "results"
+      required_info: ["主要发现", "数据分析", "结果呈现"]
+      min_words: 2000
+      max_words: 3000
+    
+    - name: "讨论"
+      key: "discussion"
+      required_info: ["结果解释", "理论贡献", "实践启示", "研究局限"]
+      min_words: 1500
+      max_words: 2000
+    
+    - name: "结论"
+      key: "conclusion"
+      required_info: ["研究总结", "主要贡献", "未来研究方向"]
+      min_words: 500
+      max_words: 800
+
+# 多模型协作配置
+model_collaboration:
+  # 角色分配
+  roles:
+    information_collector:
+      description: "信息收集者 - 负责引导用户提供详细信息"
+      temperature: 0.7
+      
+    content_generator:
+      description: "内容生成者 - 负责生成论文内容"
+      temperature: 0.8
+      
+    quality_reviewer:
+      description: "质量审核者 - 负责审核和改进内容质量"
+      temperature: 0.3
+      
+    structure_optimizer:
+      description: "结构优化者 - 负责优化论文结构和逻辑"
+      temperature: 0.5
+
+# 提示词模板配置
+prompts:
+  system_role: "你是一位经验丰富的学术论文写作专家，专门帮助研究者撰写高质量的学术论文。"
